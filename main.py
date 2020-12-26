@@ -191,4 +191,6 @@ def show_menu(db):
     else:
         print("Pilihan anda salah!")
 
-show_menu(db)
+if __name__ == "__main__":
+  while(True):
+    show_menu(db)
