@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from functools import partial
 import mysql.connector
 import os
 
@@ -54,7 +55,41 @@ def show_semua_barang():
 def tambah_barang():
     print('Berhasil ditambahkan!')
 
-
+def search_barang():
+    nama_barang = cari_barang.text()
+    print(nama_barang)
+    print('Berhasil cari barang')
+    cursor = db.cursor()
+    sql = "SELECT * FROM barang WHERE nama_barang LIKE %s"
+    val = ("%{}%".format(nama_barang),)
+    cursor.execute(sql,val)
+    results = cursor.fetchall()
+    tbl_barang.setRowCount(len(results))
+    tbl_barang.setRowHeight(0,50)
+    tbl_barang.setRowHeight(1,50)
+    tbl_barang.setRowHeight(2,50)
+    tbl_barang.setRowHeight(3,50)
+    tbl_barang.setRowHeight(4,50)
+    if cursor.rowcount == 0:
+        print("Tidak ada data")
+    else:
+        for index,data in enumerate(results):
+            btn_edit = QPushButton('Edit')
+            btn_edit.clicked.connect(lambda : edit_barang(str(data[0])))
+            btn_edit.setFixedHeight(30)
+            btn_hapus = QPushButton('Hapus')
+            btn_hapus.clicked.connect(lambda : hapus_barang(str(data[0])))
+            btn_hapus.setFixedHeight(30)
+            btn_layout = QHBoxLayout()
+            btn_layout.addWidget(btn_edit)
+            btn_layout.addWidget(btn_hapus)
+            btn_widget = QWidget()
+            btn_widget.setLayout(btn_layout)
+            tbl_barang.setItem(index,0,QTableWidgetItem(str(data[1])))
+            tbl_barang.setItem(index,1,QTableWidgetItem(str(data[2])))
+            tbl_barang.setItem(index,2,QTableWidgetItem(str(data[3])))
+            tbl_barang.setItem(index,3,QTableWidgetItem(str(data[4])))
+            tbl_barang.setCellWidget(index,4,btn_widget)
 
 app = QApplication([])
 window = QMainWindow()
@@ -78,6 +113,21 @@ btn_tambah = QPushButton('Tambah Barang')
 btn_tambah.clicked.connect(tambah_barang)
 btn_tambah.setFixedHeight(40)
 
+# Cari Barang
+cari_barang = QLineEdit()
+cari_barang.setClearButtonEnabled(True)
+cari_barang.setFixedHeight(40)
+cari_barang.setFixedWidth(250)
+cari_barang.setFont(QFont('Arial',15))
+cari_barang.setPlaceholderText('Cari barang...')
+cari_barang.addAction(QIcon('images/search.ico'),QLineEdit.LeadingPosition)
+# nama_barang_dicari = cari_barang.text()
+nama_barang_dicari = cari_barang.text()
+# cari_barang.returnPressed.connect(lambda x=nama_barang_dicari: cari_barang(x))
+# cari_barang.returnPressed.connect(partial(search_barang,cari_barang.text()))
+cari_barang.returnPressed.connect(search_barang)
+
+
 # Table Barang
 tbl_barang = QTableWidget()
 tbl_barang.setColumnCount(5)
@@ -99,6 +149,7 @@ hor_layout1.addWidget(header)
 # Baris 2
 hor_layout2 = QHBoxLayout()
 hor_layout2.addWidget(btn_tambah)
+hor_layout2.addWidget(cari_barang)
 
 ver_layout = QVBoxLayout()
 ver_layout.addLayout(hor_layout1)
