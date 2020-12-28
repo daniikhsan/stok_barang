@@ -12,12 +12,49 @@ db = mysql.connector.connect(
     password="",
     database="stok_barang"
 )
-
 def edit_barang(id_barang):
     print(f'Berhasil diupdate!{id_barang}')
 
 def hapus_barang(id_barang):
     print(f'Berhasil dihapus!{id_barang}')
+
+def show_semua_barang():
+    cursor = db.cursor()
+    sql = "SELECT * FROM barang ORDER BY last_update DESC"
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    tbl_barang.setRowCount(len(results))
+    tbl_barang.setRowHeight(0,50)
+    tbl_barang.setRowHeight(1,50)
+    tbl_barang.setRowHeight(2,50)
+    tbl_barang.setRowHeight(3,50)
+    tbl_barang.setRowHeight(4,50)
+    # Looping data
+    if cursor.rowcount == 0:
+        print("Tidak ada data")
+    else:
+        for index,data in enumerate(results):
+            btn_edit = QPushButton('Edit')
+            btn_edit.clicked.connect(lambda: edit_barang(str(data[0])))
+            btn_edit.setFixedHeight(30)
+            btn_hapus = QPushButton('Hapus')
+            btn_hapus.clicked.connect(lambda: hapus_barang(str(data[0])))
+            btn_hapus.setFixedHeight(30)
+            btn_layout = QHBoxLayout()
+            btn_layout.addWidget(btn_edit)
+            btn_layout.addWidget(btn_hapus)
+            btn_widget = QWidget()
+            btn_widget.setLayout(btn_layout)
+            tbl_barang.setItem(index,0,QTableWidgetItem(str(data[1])))
+            tbl_barang.setItem(index,1,QTableWidgetItem(str(data[2])))
+            tbl_barang.setItem(index,2,QTableWidgetItem(str(data[3])))
+            tbl_barang.setItem(index,3,QTableWidgetItem(str(data[4])))
+            tbl_barang.setCellWidget(index,4,btn_widget)
+
+def tambah_barang():
+    print('Berhasil ditambahkan!')
+
+
 
 app = QApplication([])
 window = QMainWindow()
@@ -42,18 +79,7 @@ btn_tambah.clicked.connect(tambah_barang)
 btn_tambah.setFixedHeight(40)
 
 # Table Barang
-cursor = db.cursor()
-sql = "SELECT * FROM barang ORDER BY last_update DESC"
-cursor.execute(sql)
-results = cursor.fetchall()
-print(len(results))
 tbl_barang = QTableWidget()
-tbl_barang.setRowCount(len(results))
-tbl_barang.setRowHeight(0,50)
-tbl_barang.setRowHeight(1,50)
-tbl_barang.setRowHeight(2,50)
-tbl_barang.setRowHeight(3,50)
-tbl_barang.setRowHeight(4,50)
 tbl_barang.setColumnCount(5)
 header_table = tbl_barang.horizontalHeader()
 header_table.setSectionResizeMode(0,QHeaderView.Stretch)
@@ -63,27 +89,8 @@ header_table.setSectionResizeMode(3,QHeaderView.Stretch)
 header_table.setSectionResizeMode(4,QHeaderView.Stretch)
 tbl_barang.setHorizontalHeaderLabels(['Nama Barang','Stok Barang','Keterangan Barang','Terakhir Diperbarui','Aksi'])
 tbl_barang.setEditTriggers(QAbstractItemView.NoEditTriggers)
+show_semua_barang()
 
-# Looping data
-if cursor.rowcount == 0:
-    print("Tidak ada data")
-else:
-    for index,data in enumerate(results):
-        btn_edit = QPushButton('Edit')
-        btn_edit.setFixedHeight(25)
-        btn_edit.clicked.connect(lambda: edit_barang(data[0]))
-        btn_hapus = QPushButton('Hapus')
-        btn_hapus.clicked.connect(lambda: hapus_barang(data[0]))
-        btn_layout = QHBoxLayout()
-        btn_layout.addWidget(btn_edit)
-        btn_layout.addWidget(btn_hapus)
-        btn_widget = QWidget()
-        btn_widget.setLayout(btn_layout)
-        tbl_barang.setItem(index,0,QTableWidgetItem(str(data[1])))
-        tbl_barang.setItem(index,1,QTableWidgetItem(str(data[2])))
-        tbl_barang.setItem(index,2,QTableWidgetItem(str(data[3])))
-        tbl_barang.setItem(index,3,QTableWidgetItem(str(data[4])))
-        tbl_barang.setCellWidget(index,4,btn_widget)
 
 # Horizontal Layout
 # Baris 1
