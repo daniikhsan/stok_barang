@@ -19,11 +19,7 @@ def edit_barang(id_barang):
 def hapus_barang(id_barang):
     print(f'Berhasil dihapus!{id_barang}')
 
-def show_semua_barang():
-    cursor = db.cursor()
-    sql = "SELECT * FROM barang ORDER BY last_update DESC"
-    cursor.execute(sql)
-    results = cursor.fetchall()
+def show_barang(cursor,results):
     tbl_barang.setRowCount(len(results))
     tbl_barang.setRowHeight(0,50)
     tbl_barang.setRowHeight(1,50)
@@ -52,44 +48,25 @@ def show_semua_barang():
             tbl_barang.setItem(index,3,QTableWidgetItem(str(data[4])))
             tbl_barang.setCellWidget(index,4,btn_widget)
 
+def show_semua_barang():
+    cursor = db.cursor()
+    sql = "SELECT * FROM barang ORDER BY last_update DESC"
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    show_barang(cursor,results)
+
 def tambah_barang():
     print('Berhasil ditambahkan!')
 
 def search_barang():
     nama_barang = cari_barang.text()
-    print(nama_barang)
-    print('Berhasil cari barang')
     cursor = db.cursor()
     sql = "SELECT * FROM barang WHERE nama_barang LIKE %s"
     val = ("%{}%".format(nama_barang),)
     cursor.execute(sql,val)
     results = cursor.fetchall()
-    tbl_barang.setRowCount(len(results))
-    tbl_barang.setRowHeight(0,50)
-    tbl_barang.setRowHeight(1,50)
-    tbl_barang.setRowHeight(2,50)
-    tbl_barang.setRowHeight(3,50)
-    tbl_barang.setRowHeight(4,50)
-    if cursor.rowcount == 0:
-        print("Tidak ada data")
-    else:
-        for index,data in enumerate(results):
-            btn_edit = QPushButton('Edit')
-            btn_edit.clicked.connect(lambda : edit_barang(str(data[0])))
-            btn_edit.setFixedHeight(30)
-            btn_hapus = QPushButton('Hapus')
-            btn_hapus.clicked.connect(lambda : hapus_barang(str(data[0])))
-            btn_hapus.setFixedHeight(30)
-            btn_layout = QHBoxLayout()
-            btn_layout.addWidget(btn_edit)
-            btn_layout.addWidget(btn_hapus)
-            btn_widget = QWidget()
-            btn_widget.setLayout(btn_layout)
-            tbl_barang.setItem(index,0,QTableWidgetItem(str(data[1])))
-            tbl_barang.setItem(index,1,QTableWidgetItem(str(data[2])))
-            tbl_barang.setItem(index,2,QTableWidgetItem(str(data[3])))
-            tbl_barang.setItem(index,3,QTableWidgetItem(str(data[4])))
-            tbl_barang.setCellWidget(index,4,btn_widget)
+    show_barang(cursor,results)
+    
 
 app = QApplication([])
 window = QMainWindow()
