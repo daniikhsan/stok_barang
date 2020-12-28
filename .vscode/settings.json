@@ -2,8 +2,8 @@
     "python.linting.pylintEnabled": false,
     "python.linting.pylamaEnabled": false,
     "python.linting.enabled": true,
-    "python.linting.mypyEnabled": false,
+    "python.linting.mypyEnabled": true,
     "python.linting.pydocstyleEnabled": false,
     "python.linting.pycodestyleEnabled": false,
-    "python.linting.prospectorEnabled": true
+    "python.linting.prospectorEnabled": false
 }
