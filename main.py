@@ -14,10 +14,11 @@ db = mysql.connector.connect(
     database="stok_barang"
 )
 def edit_barang(id_barang):
-    print(f'Berhasil diupdate!{id_barang}')
+    # id_barang = str(id_barang)
+    print(f"Data berhasil diupdate! ID Barang = {id_barang}")
 
 def hapus_barang(id_barang):
-    print(f'Berhasil dihapus!{id_barang}')
+    print(f'Data berhasil dihapus! ID Barang = {id_barang}')
 
 def show_barang(cursor,results):
     tbl_barang.setRowCount(len(results))
@@ -28,14 +29,14 @@ def show_barang(cursor,results):
     tbl_barang.setRowHeight(4,50)
     # Looping data
     if cursor.rowcount == 0:
-        print("Tidak ada data")
+        print('Tidak ada data')
     else:
         for index,data in enumerate(results):
-            btn_edit = QPushButton('Edit')
-            btn_edit.clicked.connect(lambda : edit_barang(str(data[0])))
+            btn_edit = QPushButton(f'Edit')
             btn_edit.setFixedHeight(30)
+            btn_edit.clicked.connect(lambda checked, i=data[0] : edit_barang(i))
             btn_hapus = QPushButton('Hapus')
-            btn_hapus.clicked.connect(lambda : hapus_barang(str(data[0])))
+            btn_hapus.clicked.connect(lambda checked, i=data[0] : hapus_barang(i))
             btn_hapus.setFixedHeight(30)
             btn_layout = QHBoxLayout()
             btn_layout.addWidget(btn_edit)
@@ -78,7 +79,6 @@ window.move(qtRectangle.topLeft())
 window.resize(778,500)
 window.setWindowTitle("Stok Barang")
 
-
 # Header
 header = QLabel("Gudangg Barang")
 header.setFont(QFont('Arial',15))
@@ -98,10 +98,6 @@ cari_barang.setFixedWidth(250)
 cari_barang.setFont(QFont('Arial',15))
 cari_barang.setPlaceholderText('Cari barang...')
 cari_barang.addAction(QIcon('images/search.ico'),QLineEdit.LeadingPosition)
-# nama_barang_dicari = cari_barang.text()
-nama_barang_dicari = cari_barang.text()
-# cari_barang.returnPressed.connect(lambda x=nama_barang_dicari: cari_barang(x))
-# cari_barang.returnPressed.connect(partial(search_barang,cari_barang.text()))
 cari_barang.returnPressed.connect(search_barang)
 
 
