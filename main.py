@@ -35,10 +35,10 @@ def show_semua_barang():
     else:
         for index,data in enumerate(results):
             btn_edit = QPushButton('Edit')
-            btn_edit.clicked.connect(lambda: edit_barang(str(data[0])))
+            btn_edit.clicked.connect(lambda : edit_barang(str(data[0])))
             btn_edit.setFixedHeight(30)
             btn_hapus = QPushButton('Hapus')
-            btn_hapus.clicked.connect(lambda: hapus_barang(str(data[0])))
+            btn_hapus.clicked.connect(lambda : hapus_barang(str(data[0])))
             btn_hapus.setFixedHeight(30)
             btn_layout = QHBoxLayout()
             btn_layout.addWidget(btn_edit)
