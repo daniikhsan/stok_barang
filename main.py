@@ -173,16 +173,79 @@ class MainWindow(QMainWindow):
 class TambahWindow(QMainWindow):
     def __init__(self,parent=None):
         super(TambahWindow, self).__init__(parent)
-        self.resize(500,500)
+        self.resize(500,200)
+        self.setWindowTitle('Tambah Barang')
         self.form()
     
+    def submit_form(self):
+        nama_barang = str(self.input_nama.text())
+        stok_barang = int(self.input_stok.text())
+        keterangan = str(self.input_keterangan.text())
+        val = (nama_barang,stok_barang,keterangan)
+        cursor = db.cursor()
+        sql = "CALL barang_baru (%s,%s,%s)"
+        cursor.execute(sql,val)
+        db.commit()
+        MainWindow().show_semua_barang()
+        self.close()
+
     def form(self):
-        self.edit_text = QLineEdit(self)
-        self.edit_text.returnPressed.connect(self.cetak)
+        self.form_layout = QFormLayout()
+        # Header
+        self.header = QLabel("Tambah Barang")
+        self.header.setFont(QFont('Arial',15))
+        self.header.setAlignment(Qt.AlignCenter)
+        self.header.setFixedHeight(50)
+
+        # input nama
+        self.lbl_nama = QLabel("Nama Barang")
+        self.lbl_nama.setFixedWidth(130)
+        self.lbl_nama.adjustSize()
+        self.lbl_nama.setFont(QFont('Arial',13))
+
+        self.input_nama = QLineEdit()
+        self.input_nama.setFixedHeight(30)
+        self.input_nama.setFont(QFont('Arial',15))
+
+        # input stok
+        self.lbl_stok = QLabel("Stok Barang")
+        self.lbl_stok.setFixedWidth(130)
+        self.lbl_stok.adjustSize()
+        self.lbl_stok.setFont(QFont('Arial',13))
+
+        self.input_stok = QLineEdit()
+        self.input_stok.setFixedHeight(30)
+        self.input_stok.setFont(QFont('Arial',15))
+
+        # input keterangan
+        self.lbl_keterangan = QLabel("""Keterangan (Opt)""")
+        self.lbl_keterangan.setFixedWidth(130)
+        self.lbl_keterangan.adjustSize()
+        self.lbl_keterangan.setFont(QFont('Arial',13))
+
+        self.input_keterangan = QLineEdit()
+        self.input_keterangan.setFixedHeight(40)
+        self.input_keterangan.setFont(QFont('Arial',15))
+
+        # submit
+        self.submit = QPushButton('Simpan')
+        self.submit.setFixedHeight(40)
+        self.submit.clicked.connect(self.submit_form)
+
+        self.form_layout.addRow(self.lbl_nama,self.input_nama)
+        self.form_layout.addRow(self.lbl_stok,self.input_stok)
+        self.form_layout.addRow(self.lbl_keterangan,self.input_keterangan)
+        self.form_layout.addRow(self.submit)
+
+        self.ver_layout = QVBoxLayout()
+        self.ver_layout.addWidget(self.header)
+        self.ver_layout.addLayout(self.form_layout)
+        self.ver_layout.setSpacing(10)
+
+        self.widget = QWidget()
+        self.widget.setLayout(self.ver_layout)
+        self.setCentralWidget(self.widget)
     
-    def cetak(self):
-        self.text = self.edit_text.text()
-        print(self.text)
 
 def run():  
     app = QApplication(sys.argv)
