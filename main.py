@@ -312,7 +312,6 @@ class MainWindow(QMainWindow):
             self.cursor.execute(self.sql,self.val)
             db.commit()
             MainWindow().show_semua_barang()
-        print(f'Data berhasil dihapus! ID Barang = {id_barang}')
     
     # Tambah Data Barang
     def tambah_barang(self):
@@ -329,9 +328,8 @@ class MainWindow(QMainWindow):
         self.results = self.cursor.fetchall()
         self.show_barang(self.cursor,self.results)
 
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.setFont(QFont('Arial',10))
     sys.exit(app.exec_())
