@@ -2,9 +2,8 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from functools import partial
 import mysql.connector
-import os
+import datetime
 
 # Database
 db = mysql.connector.connect(
@@ -13,14 +12,35 @@ db = mysql.connector.connect(
     password="",
     database="stok_barang"
 )
+
+# Tambah data barang baru
+def tambah_barang():
+    print('Berhasil ditambahkan!')
+
+# Masuk Barang
+def masuk_barang(id_barang):
+    print(f'Berhasil Masuk Barang! {id_barang}')
+
+# Keluar Barang
+def keluar_barang(id_barang):
+    print(f"Berhasil keluar barang! {id_barang}")
+
+# # Detail Barang
+# def detail_barang(id_barang):
+#     print(f"Detail Barang : {id_barang}")
+
+# Edit Data Barang
 def edit_barang(id_barang):
     # id_barang = str(id_barang)
     print(f"Data berhasil diupdate! ID Barang = {id_barang}")
 
+# Hapus Data Barang
 def hapus_barang(id_barang):
     print(f'Data berhasil dihapus! ID Barang = {id_barang}')
 
+# Tampilkan data barang ke table
 def show_barang(cursor,results):
+    # Looping data
     tbl_barang.setRowCount(len(results))
     tbl_barang.setRowHeight(0,50)
     tbl_barang.setRowHeight(1,50)
@@ -32,23 +52,39 @@ def show_barang(cursor,results):
         print('Tidak ada data')
     else:
         for index,data in enumerate(results):
-            btn_edit = QPushButton(f'Edit')
+            # Tombol Masuk Barang
+            btn_masuk = QPushButton('Masuk')
+            btn_masuk.clicked.connect(lambda checked, i=data[0] : masuk_barang(i))
+            btn_masuk.setFixedHeight(30)
+            # Tombol Keluar Barang
+            btn_keluar = QPushButton('Keluar')
+            btn_keluar.clicked.connect(lambda checked, i=data[0] : keluar_barang(i))
+            btn_keluar.setFixedHeight(30)
+            # Tombol Edit
+            btn_edit = QPushButton('Edit')
             btn_edit.setFixedHeight(30)
             btn_edit.clicked.connect(lambda checked, i=data[0] : edit_barang(i))
+            # Tombol Hapus
             btn_hapus = QPushButton('Hapus')
             btn_hapus.clicked.connect(lambda checked, i=data[0] : hapus_barang(i))
             btn_hapus.setFixedHeight(30)
+            # Layout Tombol
             btn_layout = QHBoxLayout()
+            btn_layout.addWidget(btn_masuk)
+            btn_layout.addWidget(btn_keluar)
             btn_layout.addWidget(btn_edit)
             btn_layout.addWidget(btn_hapus)
+            # Layout tombol menjadi widget
             btn_widget = QWidget()
             btn_widget.setLayout(btn_layout)
+            # Menampilkan Baris
             tbl_barang.setItem(index,0,QTableWidgetItem(str(data[1])))
             tbl_barang.setItem(index,1,QTableWidgetItem(str(data[2])))
             tbl_barang.setItem(index,2,QTableWidgetItem(str(data[3])))
-            tbl_barang.setItem(index,3,QTableWidgetItem(str(data[4])))
+            tbl_barang.setItem(index,3,QTableWidgetItem(data[4].strftime("%A,%d %B %Y %X")))
             tbl_barang.setCellWidget(index,4,btn_widget)
 
+# Tampilkan semua data barang
 def show_semua_barang():
     cursor = db.cursor()
     sql = "SELECT * FROM barang ORDER BY last_update DESC"
@@ -56,9 +92,7 @@ def show_semua_barang():
     results = cursor.fetchall()
     show_barang(cursor,results)
 
-def tambah_barang():
-    print('Berhasil ditambahkan!')
-
+# Tampilkan Data barang yang dicari
 def search_barang():
     nama_barang = cari_barang.text()
     cursor = db.cursor()
@@ -68,15 +102,14 @@ def search_barang():
     results = cursor.fetchall()
     show_barang(cursor,results)
     
-
+# Instalasi window
 app = QApplication([])
 window = QMainWindow()
-
 qtRectangle = window.geometry()
 center = QDesktopWidget().availableGeometry().center()
 qtRectangle.moveCenter(center)
 window.move(qtRectangle.topLeft())
-window.resize(778,500)
+window.resize(850,500)
 window.setWindowTitle("Stok Barang")
 
 # Header
@@ -109,7 +142,7 @@ header_table.setSectionResizeMode(0,QHeaderView.Stretch)
 header_table.setSectionResizeMode(1,QHeaderView.Stretch)
 header_table.setSectionResizeMode(2,QHeaderView.Stretch)
 header_table.setSectionResizeMode(3,QHeaderView.Stretch)
-header_table.setSectionResizeMode(4,QHeaderView.Stretch)
+header_table.setSectionResizeMode(4,50)
 tbl_barang.setHorizontalHeaderLabels(['Nama Barang','Stok Barang','Keterangan Barang','Terakhir Diperbarui','Aksi'])
 tbl_barang.setEditTriggers(QAbstractItemView.NoEditTriggers)
 show_semua_barang()
@@ -124,16 +157,17 @@ hor_layout2 = QHBoxLayout()
 hor_layout2.addWidget(btn_tambah)
 hor_layout2.addWidget(cari_barang)
 
+# Vertikal Layout
 ver_layout = QVBoxLayout()
 ver_layout.addLayout(hor_layout1)
 ver_layout.addLayout(hor_layout2)
 ver_layout.addWidget(tbl_barang)
 
-
+# Instalasi Semua Widget 
 widget = QWidget()
 widget.setLayout(ver_layout)
 window.setCentralWidget(widget)
 
-window.show()
+window.showMaximized()
 sys.exit(app.exec_())
 
