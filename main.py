@@ -89,7 +89,80 @@ class TambahWindow(QMainWindow):
         self.widget.setLayout(self.ver_layout)
         self.setCentralWidget(self.widget)
         
+class EditWindow(QMainWindow):
+    def __init__(self,id_barang):
+        super().__init__()
+        self.id_barang = id_barang
+        self.cursor = db.cursor()
+        self.sql = "SELECT * FROM barang WHERE id_barang=%s"
+        self.val = (self.id_barang,)
+        self.cursor.execute(self.sql,self.val)
+        self.data = self.cursor.fetchone()
 
+        # sql = "UPDATE barang SET nama_barang=%s,keterangan=%s, last_update = NOW() WHERE id_barang=%s"
+        # val =(nama_barang,keterangan_barang,id_barang)
+        # cursor.execute(sql,val)
+        # db.commit()
+        self.form()
+    
+    def submit_form(self):
+        # nama_barang = str(self.input_nama.text())
+        # keterangan_barang = str(self.input_keterangan.text())
+        # sql = "UPDATE barang SET nama_barang=%s,keterangan=%s, last_update = NOW() WHERE id_barang=%s"
+        # val =(nama_barang,keterangan_barang,self.id_barang)
+        # cursor.execute(sql,val)
+        # db.commit()
+        MainWindow().show_semua_barang()
+        self.close()
+
+    def form(self):
+        self.resize(800,300)
+        self.form_layout = QFormLayout()
+        # Header
+        self.header = QLabel("Edit Barang")
+        self.header.setFont(QFont('Arial',15))
+        self.header.setAlignment(Qt.AlignCenter)
+        self.header.setFixedHeight(50)
+
+        # input nama
+        self.lbl_nama = QLabel("Nama Barang")
+        self.lbl_nama.setFixedWidth(130)
+        self.lbl_nama.adjustSize()
+        self.lbl_nama.setFont(QFont('Arial',13))
+
+        self.input_nama = QLineEdit()
+        self.input_nama.setFixedHeight(30)
+        self.input_nama.setText(self.data[1])
+        self.input_nama.setFont(QFont('Arial',15))
+
+        # input keterangan
+        self.lbl_keterangan = QLabel("""Keterangan (Opt)""")
+        self.lbl_keterangan.setFixedWidth(130)
+        self.lbl_keterangan.adjustSize()
+        self.lbl_keterangan.setFont(QFont('Arial',13))
+
+        self.input_keterangan = QLineEdit()
+        self.input_keterangan.setFixedHeight(40)
+        self.input_keterangan.setFont(QFont('Arial',15))
+
+        # submit
+        self.submit = QPushButton('Simpan')
+        self.submit.setFixedHeight(40)
+        self.submit.clicked.connect(self.submit_form)
+
+        self.form_layout.addRow(self.lbl_nama,self.input_nama)
+        self.form_layout.addRow(self.lbl_keterangan,self.input_keterangan)
+        self.form_layout.addRow(self.submit)
+
+        self.ver_layout = QVBoxLayout()
+        self.ver_layout.addWidget(self.header)
+        self.ver_layout.addLayout(self.form_layout)
+        self.ver_layout.setSpacing(10)
+
+        self.widget = QWidget()
+        self.widget.setLayout(self.ver_layout)
+        self.setCentralWidget(self.widget)
+ 
 
 class MainWindow(QMainWindow):
     
