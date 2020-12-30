@@ -364,9 +364,10 @@ class MainWindow(QMainWindow):
         self.resize(800,500)
         # Header
         self.header = QLabel("Gudangg Barang")
-        self.header.setFont(QFont('Arial',15))
+        self.header.setFont(QFont('Arial',30))
         self.header.setAlignment(Qt.AlignCenter)
-        self.header.setFixedHeight(30)
+        self.header.setFixedHeight(50)
+        self.header.setAlignment(Qt.AlignLeft)
 
         # Tombol Tambah Barang
         self.btn_tambah = QPushButton('Tambah Barang')
@@ -395,14 +396,17 @@ class MainWindow(QMainWindow):
         self.tbl_barang.setHorizontalHeaderLabels(['Nama Barang','Stok Barang','Keterangan Barang','Terakhir Diperbarui','Aksi'])
         self.tbl_barang.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.show_semua_barang()
+
+        # Tombol Tambah dan Cari
+        self.ver_right = QVBoxLayout()
+        self.ver_right.addWidget(self.btn_tambah)
+        self.ver_right.addWidget(self.cari_barang)
         # Horizontal Layout
         # Baris 1
         self.hor_layout1 = QHBoxLayout()
         self.hor_layout1.addWidget(self.header)
-        # Baris 2
-        self.hor_layout2 = QHBoxLayout()
-        self.hor_layout2.addWidget(self.btn_tambah)
-        self.hor_layout2.addWidget(self.cari_barang)
+        # self.hor_layout2 = QHBoxLayout()
+        self.hor_layout1.addLayout(self.ver_right)
 
         # Baris 3
         self.hor_layout3 = QHBoxLayout()
@@ -411,7 +415,7 @@ class MainWindow(QMainWindow):
         # Vertikal Layout
         self.ver_layout = QVBoxLayout()
         self.ver_layout.addLayout(self.hor_layout1)
-        self.ver_layout.addLayout(self.hor_layout2)
+        # self.ver_layout.addLayout(self.hor_layout2)
         self.ver_layout.addLayout(self.hor_layout3)
 
         self.widget = QWidget()
