@@ -13,6 +13,97 @@ db = mysql.connector.connect(
     database="stok_barang"
 )
 
+class InfoBarangMasuk(QWidget):
+    def __init__(self,id_barang):
+        super().__init__()
+        self.cursor = db.cursor()
+        self.sql = "SELECT * FROM barang_masuk WHERE id_barang=%s"
+        self.val = (id_barang,)
+        self.cursor.execute(self.sql,self.val)
+        self.results = self.cursor.fetchall()
+        # Looping data
+        if self.cursor.rowcount == 0:
+            self.label = QLabel('Tidak ada')
+            self.label.setAlignment(Qt.AlignCenter)
+            ver_layout.addWidget(self.label)
+        else:
+            self.tbl_barang = QTableWidget()
+            self.tbl_barang.setColumnCount(3)
+            self.header_table = self.tbl_barang.horizontalHeader()
+            self.header_table.setSectionResizeMode(0,QHeaderView.Stretch)
+            self.header_table.setSectionResizeMode(1,QHeaderView.Stretch)
+            self.header_table.setSectionResizeMode(2,QHeaderView.Stretch)
+            self.tbl_barang.setHorizontalHeaderLabels(['Jumlah Masuk','Keterangan','Tanggal Masuk'])
+            self.tbl_barang.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.tbl_barang.setRowCount(len(self.results))
+            for index,data in enumerate(self.results):
+                self.tbl_barang.setRowHeight(index,50)
+                # Menampilkan Baris
+                self.tbl_barang.setItem(index,0,QTableWidgetItem(str(data[3])))
+                self.tbl_barang.setItem(index,1,QTableWidgetItem(str(data[4])))
+                self.tbl_barang.setItem(index,2,QTableWidgetItem(data[2].strftime("%A,%d %B %Y %X")))
+
+        ver_layout = QVBoxLayout()
+        ver_layout.addWidget(self.tbl_barang)
+
+        self.setLayout(ver_layout)
+
+class InfoBarangKeluar(QWidget):
+    def __init__(self,id_barang):
+        ver_layout = QVBoxLayout()
+        super().__init__()
+        self.cursor = db.cursor()
+        self.sql = "SELECT * FROM barang_keluar WHERE id_barang=%s"
+        self.val = (id_barang,)
+        self.cursor.execute(self.sql,self.val)
+        self.results = self.cursor.fetchall()
+        # Looping data
+        if self.cursor.rowcount == 0:
+            self.label = QLabel('Tidak ada')
+            self.label.setAlignment(Qt.AlignCenter)
+            ver_layout.addWidget(self.label)
+        else:
+            self.tbl_barang = QTableWidget()
+            self.tbl_barang.setColumnCount(3)
+            self.header_table = self.tbl_barang.horizontalHeader()
+            self.header_table.setSectionResizeMode(0,QHeaderView.Stretch)
+            self.header_table.setSectionResizeMode(1,QHeaderView.Stretch)
+            self.header_table.setSectionResizeMode(2,QHeaderView.Stretch)
+            self.tbl_barang.setHorizontalHeaderLabels(['Jumlah Masuk','Keterangan','Tanggal Keluar'])
+            self.tbl_barang.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.tbl_barang.setRowCount(len(self.results))
+            for index,data in enumerate(self.results):
+                self.tbl_barang.setRowHeight(index,50)
+                # Menampilkan Baris
+                self.tbl_barang.setItem(index,0,QTableWidgetItem(str(data[4])))
+                self.tbl_barang.setItem(index,1,QTableWidgetItem(str(data[3])))
+                self.tbl_barang.setItem(index,2,QTableWidgetItem(data[2].strftime("%A,%d %B %Y %X")))
+            
+            ver_layout.addWidget(self.tbl_barang)
+
+        self.setLayout(ver_layout)
+
+
+class DetailBarangWindow(QDialog):
+    def __init__(self,id_barang):
+        super().__init__()
+        self.setWindowTitle('Detail Barang')
+        self.id_barang = id_barang
+        self.tampilan()
+
+    def tampilan(self):
+        self.resize(800,300)
+        vbox = QVBoxLayout()
+        self.tabWidget = QTabWidget()
+        barang_masuk = InfoBarangMasuk(self.id_barang)
+        barang_keluar = InfoBarangKeluar(self.id_barang)
+
+        self.tabWidget.addTab(barang_masuk,"Barang Masuk")
+        self.tabWidget.addTab(barang_keluar,"Barang Keluar")
+        vbox.addWidget(self.tabWidget)
+        self.setLayout(vbox)
+
+
 class KeluarBarangWindow(QMainWindow):
     def __init__(self,id_barang):
         super().__init__()
@@ -291,7 +382,9 @@ class TambahWindow(QMainWindow):
         sql = "CALL barang_baru (%s,%s,%s)"
         cursor.execute(sql,val)
         db.commit()
+        MainWindow().close()
         MainWindow().show_semua_barang()
+        MainWindow().test_function()
         self.close()
 
     def form(self):
@@ -389,7 +482,7 @@ class MainWindow(QMainWindow):
         self.tbl_barang.setColumnCount(5)
         self.header_table = self.tbl_barang.horizontalHeader()
         self.header_table.setSectionResizeMode(0,QHeaderView.Stretch)
-        self.header_table.setSectionResizeMode(1,QHeaderView.Stretch)
+        self.header_table.setSectionResizeMode(1,500)
         self.header_table.setSectionResizeMode(2,QHeaderView.Stretch)
         self.header_table.setSectionResizeMode(3,QHeaderView.Stretch)
         self.header_table.setSectionResizeMode(4,QHeaderView.Stretch)
@@ -424,6 +517,8 @@ class MainWindow(QMainWindow):
 
         self.showMaximized()
 
+    # def test_function(self):
+    #     print('test')
     # Tampilkan Data Barang ke Table
     def show_barang(self,cursor,results):
         # Looping data
@@ -434,8 +529,12 @@ class MainWindow(QMainWindow):
         else:
             for index,data in enumerate(self.results):
                 self.tbl_barang.setRowHeight(index,50)
+                # Tombol detail Barang
+                self.btn_detail = QPushButton('Detail')
+                self.btn_detail.clicked.connect(lambda checked, i=data[0] : self.detail_barang(i))
+                self.btn_detail.setFixedHeight(30)
                 # Tombol Masuk Barang
-                self.btn_masuk = QPushButton(f'Masuk')
+                self.btn_masuk = QPushButton('Masuk')
                 self.btn_masuk.clicked.connect(lambda checked, i=data[0] : self.masuk_barang(i))
                 self.btn_masuk.setFixedHeight(30)
                 # Tombol Keluar Barang
@@ -452,6 +551,7 @@ class MainWindow(QMainWindow):
                 self.btn_hapus.setFixedHeight(30)
                 # Layout Tombol
                 self.btn_layout = QHBoxLayout()
+                self.btn_layout.addWidget(self.btn_detail)
                 self.btn_layout.addWidget(self.btn_masuk)
                 self.btn_layout.addWidget(self.btn_keluar)
                 self.btn_layout.addWidget(self.btn_edit)
@@ -465,6 +565,7 @@ class MainWindow(QMainWindow):
                 self.tbl_barang.setItem(index,2,QTableWidgetItem(str(data[3])))
                 self.tbl_barang.setItem(index,3,QTableWidgetItem(data[4].strftime("%A,%d %B %Y %X")))
                 self.tbl_barang.setCellWidget(index,4,self.btn_widget)
+            
 
     # Tampilkan semua data barang
     def show_semua_barang(self):
@@ -486,7 +587,9 @@ class MainWindow(QMainWindow):
 
     # Detail Barang
     def detail_barang(self,id_barang):
-        print(f"Detail Barang : {id_barang}")
+        self.detail_window = DetailBarangWindow(id_barang)
+        self.detail_window.show()
+        # print(f"Detail Barang : {id_barang}")
 
     # Edit Data Barang
     def edit_barang(self,id_barang):
@@ -506,10 +609,12 @@ class MainWindow(QMainWindow):
             self.val = (id_barang,)
             self.cursor.execute(self.sql,self.val)
             db.commit()
-            MainWindow().show_semua_barang()
+            self.show_semua_barang()
     
     # Tambah Data Barang
     def tambah_barang(self):
+        # self.nama_barang = "test"
+        # self.search_barang(self)
         self.tambah_window = TambahWindow()
         self.tambah_window.show()
         # MainWindow.close()
