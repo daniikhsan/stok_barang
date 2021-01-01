@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 20 Des 2020 pada 00.18
+-- Waktu pembuatan: 01 Jan 2021 pada 14.44
 -- Versi server: 10.4.17-MariaDB
 -- Versi PHP: 8.0.0
 
@@ -26,7 +26,7 @@ DELIMITER $$
 -- Prosedur
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `barang_baru` (IN `nama_barang_masuk` VARCHAR(100), IN `jumlah_barang_masuk` INT, IN `keterangan_barang_masuk` VARCHAR(255))  BEGIN
-	INSERT INTO barang (nama_barang,stok_barang,keterangan) 	 VALUES(nama_barang_masuk,jumlah_barang_masuk,keterangan_barang_masuk);
+	INSERT INTO barang (nama_barang,stok_barang) 	 VALUES(nama_barang_masuk,jumlah_barang_masuk);
    INSERT INTO barang_masuk(id_barang,tanggal_masuk,jumlah_masuk,keterangan_masuk) 
    VALUES (LAST_INSERT_ID(),NOW(),jumlah_barang_masuk,keterangan_barang_masuk);
 END$$
@@ -64,7 +64,6 @@ CREATE TABLE `barang` (
   `id_barang` int(11) NOT NULL,
   `nama_barang` varchar(100) NOT NULL,
   `stok_barang` int(11) NOT NULL,
-  `keterangan` varchar(255) DEFAULT NULL,
   `last_update` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -72,9 +71,10 @@ CREATE TABLE `barang` (
 -- Dumping data untuk tabel `barang`
 --
 
-INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok_barang`, `keterangan`, `last_update`) VALUES
-(2, 'Keyboard', 25, '', '2020-12-19 23:59:59'),
-(3, 'Mouse', 45, '', '2020-12-20 00:02:07');
+INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok_barang`, `last_update`) VALUES
+(68, 'Spidol Papan Tulis Snowman (Permanen)', 198, '2021-01-01 21:36:26'),
+(69, 'Spidol Papan Tulis Snowman (Non Permanen)', 0, '2021-01-01 21:37:25'),
+(70, 'Penghapus Papan Tulis', 123, '2021-01-01 21:39:26');
 
 -- --------------------------------------------------------
 
@@ -95,7 +95,8 @@ CREATE TABLE `barang_keluar` (
 --
 
 INSERT INTO `barang_keluar` (`id_keluar`, `id_barang`, `tanggal_keluar`, `keterangan_keluar`, `jumlah_keluar`) VALUES
-(2, 3, '2020-12-20 00:00:21', '', 5);
+(15, 68, '2021-01-01 21:36:26', 'Segel rusak', 2),
+(16, 69, '2021-01-01 21:37:25', 'Hilang', 500);
 
 -- --------------------------------------------------------
 
@@ -116,9 +117,9 @@ CREATE TABLE `barang_masuk` (
 --
 
 INSERT INTO `barang_masuk` (`id_masuk`, `id_barang`, `tanggal_masuk`, `jumlah_masuk`, `keterangan_masuk`) VALUES
-(3, 2, '2020-12-19 23:59:15', 20, ''),
-(4, 3, '2020-12-19 23:59:34', 50, 'In the house'),
-(5, 2, '2020-12-19 23:59:59', 5, '');
+(83, 68, '2021-01-01 21:36:01', 200, '10 barang segelnya sudah rusak'),
+(84, 69, '2021-01-01 21:36:56', 500, ''),
+(85, 70, '2021-01-01 21:39:26', 123, '');
 
 --
 -- Indexes for dumped tables
@@ -152,19 +153,19 @@ ALTER TABLE `barang_masuk`
 -- AUTO_INCREMENT untuk tabel `barang`
 --
 ALTER TABLE `barang`
-  MODIFY `id_barang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_barang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT untuk tabel `barang_keluar`
 --
 ALTER TABLE `barang_keluar`
-  MODIFY `id_keluar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_keluar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT untuk tabel `barang_masuk`
 --
 ALTER TABLE `barang_masuk`
-  MODIFY `id_masuk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_masuk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
