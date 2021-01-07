@@ -74,7 +74,7 @@ class InfoBarangKeluar(QWidget):
             self.header_table.setSectionResizeMode(0,QHeaderView.Stretch)
             self.header_table.setSectionResizeMode(1,QHeaderView.Stretch)
             self.header_table.setSectionResizeMode(2,QHeaderView.Stretch)
-            self.tbl_barang.setHorizontalHeaderLabels(['Tanggal Keluar','Jumlah Masuk','Keterangan'])
+            self.tbl_barang.setHorizontalHeaderLabels(['Tanggal Keluar','Jumlah Keluar','Keterangan'])
             self.tbl_barang.setEditTriggers(QAbstractItemView.NoEditTriggers)
             self.tbl_barang.setRowCount(len(self.results))
             for index,data in enumerate(self.results):
